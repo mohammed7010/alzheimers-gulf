@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماذا تعرف عن الزهايمر</title>
+    <script>
+        async function checkAccess() {
+            try {
+                let response = await fetch("https://ipapi.co/json/");
+                let data = await response.json();
+                let allowedCountries = ["SA", "AE", "KW", "QA", "BH", "OM"];
+                
+                if (!allowedCountries.includes(data.country_code)) {
+                    document.body.innerHTML = "<h1 style='text-align:center;color:red;'>هذا الموقع متاح فقط لدول الخليج العربي</h1>";
+                }
+            } catch (error) {
+                console.error("خطأ في جلب بيانات الموقع الجغرافي", error);
+            }
+        }
+
+        checkAccess();
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        textarea { width: 80%; padding: 10px; }
+        button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>مرحبًا بك في موقع "ماذا تعرف عن الزهايمر"</h1>
+    </header>
+    <main>
+        <form id="infoForm">
+            <label for="userInfo">أدخل ما تعرفه عن الزهايمر:</label><br>
+            <textarea id="userInfo" rows="4"></textarea><br>
+            <button type="submit">إرسال</button>
+        </form>
+        <div id="displayInfo"></div>
+    </main>
+    <script>
+        document.getElementById("infoForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            let inputText = document.getElementById("userInfo").value.trim();
+            if (inputText !== "") {
+                let response = await fetch("/submit-info", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ info: inputText })
+                });
+                let result = await response.json();
+                if (result.success) {
+                    let displayDiv = document.getElementById("displayInfo");
+                    let newParagraph = document.createElement("p");
+                    newParagraph.textContent = inputText;
+                    displayDiv.appendChild(newParagraph);
+                    document.getElementById("userInfo").value = "";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
